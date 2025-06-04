@@ -1,3 +1,8 @@
+"""
+Biel Bernal Pratdesaba
+"""
+import re
+
 class Alumno:
     """
     Clase usada para el tratamiento de las notas de los alumnos. Cada uno
@@ -42,3 +47,35 @@ class Alumno:
         completo y la nota media del alumno con un decimal.
         """
         return f'{self.numIden}\t{self.nombre}\t{self.media():.1f}'
+
+def leeAlumnos(ficAlum):
+    """
+    Llegeix un fitxer de text que conté les dades dels alumnes i retorna un diccionari amb objectes Alumno.
+
+    >>> alumnos = leeAlumnos('alumnos.txt')
+    >>> for alumno in alumnos:
+    ...     print(alumnos[alumno])
+    ...
+    171     Blanca Agirrebarrenetse 9.5
+    23      Carles Balcell de Lara 4.9
+    68      David Garcia Fuster     7.0
+    """
+    dicAlumnes = {}
+    patro = re.compile(r"^(\d+)\s+(.*?)\s+([\d.\s]+)$")
+
+    with open(ficAlum, "rt") as fpAlumnes:
+        for alumne in fpAlumnes:
+            alumne = alumne.strip()
+            aux = patro.match(alumne)
+            if aux:
+                numero = aux.group(1)
+                noms = aux.group(2).strip()
+                notes = re.findall(r"\d+(?:\.\d+)?", aux.group(3))                    
+                info = Alumno(noms, int(numero), list(map(float, notes)))
+                dicAlumnes[noms] = info
+    return dicAlumnes
+
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod(optionflags=doctest.NORMALIZE_WHITESPACE)
